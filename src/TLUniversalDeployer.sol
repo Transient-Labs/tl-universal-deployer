@@ -10,7 +10,6 @@ import {Clones} from "openzeppelin/proxy/Clones.sol";
 /// @author transientlabs.xyz
 /// @custom:version 1.0.0
 contract TLUniversalDeployer is Ownable {
-
     /*//////////////////////////////////////////////////////////////////////////
                                 Custom Types
     //////////////////////////////////////////////////////////////////////////*/
@@ -25,11 +24,11 @@ contract TLUniversalDeployer is Ownable {
 
     /// @dev Struct defining a contract that is deployable
     /// @param created A boolean spcifying if the cloneable contract struct has been created or not
-    /// @param type_ The contract type (human readable - ex: ERC721TL)
+    /// @param cType The contract type (human readable - ex: ERC721TL)
     /// @param versions An array of `ContractVersion` structs that are deployable
     struct DeployableContract {
         bool created;
-        string type_;
+        string cType;
         ContractVersion[] versions;
     }
 
@@ -49,9 +48,15 @@ contract TLUniversalDeployer is Ownable {
     /// @param sender The msg sender
     /// @param deployedContract The address of the deployed contract
     /// @param implementation The address of the implementation contract
-    /// @param type_ The type of contract deployed
+    /// @param cType The type of contract deployed
     /// @param version The version of contract deployed
-    event ContractDeployed(address indexed sender, address indexed deployedContract, address indexed implementation, string type_, string version);
+    event ContractDeployed(
+        address indexed sender,
+        address indexed deployedContract,
+        address indexed implementation,
+        string cType,
+        string version
+    );
 
     /*//////////////////////////////////////////////////////////////////////////
                                 Custom Errors
@@ -87,7 +92,6 @@ contract TLUniversalDeployer is Ownable {
 
         // verify contract is valid
         if (!dc.created) revert InvalidDeployableContract();
-        if (dc.versions.length == 0) revert InvalidDeployableContract();
 
         // get latest version
         ContractVersion memory cv = dc.versions[dc.versions.length - 1];
@@ -107,7 +111,6 @@ contract TLUniversalDeployer is Ownable {
 
         // verify cloneable contract is valid
         if (!dc.created) revert InvalidDeployableContract();
-        if (dc.versions.length == 0) revert InvalidDeployableContract();
         if (versionIndex >= dc.versions.length) revert InvalidDeployableContract();
 
         // get latest version
@@ -121,35 +124,24 @@ contract TLUniversalDeployer is Ownable {
                                 Admin Functions
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Function to add a contract type
+    /// @notice Function to add a contract type and/or version
     /// @dev Restricted to only owner
-    function addDeployableContract(string calldata type_, ContractVersion calldata version) external onlyOwner {
+    /// @param contractType The contract type to save this under
+    /// @param version The version to push to the DeployableContract struct
+    function addDeployableContract(string calldata contractType, ContractVersion calldata version) external onlyOwner {
         // get DeployableContract
-        bytes32 dcId = keccak256(bytes(type_));
+        bytes32 dcId = keccak256(bytes(contractType));
         DeployableContract storage dc = _deployableContracts[dcId];
 
-        // check to see if it's been created or not
-        if (dc.created) revert ContractAlreadyCreated();
+        // if the contract type has not been created, create. e
+        // else, skip and just push version.
+        if (!dc.created) {
+            dc.created = true;
+            dc.cType = contractType;
+            _deployableContractKeys.push(dcId);
+        }
 
-        // save to storage
-        dc.created = true;
-        dc.type_ = type_;
-        dc.versions.push(version);
-        _deployableContractKeys.push(dcId);
-    }
-
-    /// @notice Function to add a contract version
-    /// @dev Restricted to only owner
-    /// @dev Does not check if the version exists or not
-    function addContractVersion(string calldata type_, ContractVersion calldata version) external onlyOwner {
-        // get DeployableContract
-        bytes32 dcId = keccak256(bytes(type_));
-        DeployableContract storage dc = _deployableContracts[dcId];
-
-        // verify contract is valid
-        if (!dc.created) revert InvalidDeployableContract();
-
-        // add version
+        // push version
         dc.versions.push(version);
     }
 
@@ -158,10 +150,10 @@ contract TLUniversalDeployer is Ownable {
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Function to get contracts that can be deployed
-    function getDeployableContracts() external view returns (DeployableContract[] memory) {
-        DeployableContract[] memory dcs = new DeployableContract[](_deployableContractKeys.length);
+    function getDeployableContracts() external view returns (string[] memory) {
+        string[] memory dcs = new string[](_deployableContractKeys.length);
         for (uint256 i = 0; i < _deployableContractKeys.length; i++) {
-            dcs[i] = _deployableContracts[_deployableContractKeys[i]];
+            dcs[i] = _deployableContracts[_deployableContractKeys[i]].cType;
         }
 
         return dcs;
@@ -179,25 +171,26 @@ contract TLUniversalDeployer is Ownable {
 
     /// @notice Function to predict the address at which a contract would be deployed
     /// @dev Predicts for the latest implementation
+    /// @param sender The sender of the contract deployment transaction
     /// @param contractType The contract type to deploy
     /// @param initializationCode The initialization code to call after contract deployment
-    function predictDeployedContractAddress(string calldata contractType, bytes calldata initializationCode) external view returns (address) {
+    function predictDeployedContractAddress(
+        address sender,
+        string calldata contractType,
+        bytes calldata initializationCode
+    ) external view returns (address) {
         // get DeployableContract
         bytes32 dcId = keccak256(bytes(contractType));
         DeployableContract memory dc = _deployableContracts[dcId];
 
         // verify contract is valid
         if (!dc.created) revert InvalidDeployableContract();
-        if (dc.versions.length == 0) revert InvalidDeployableContract();
 
         // get latest version
         ContractVersion memory cv = dc.versions[dc.versions.length - 1];
 
         // create salt by hashing the sender and init code
-        bytes32 salt = keccak256(abi.encodePacked(
-            msg.sender, 
-            initializationCode
-        ));
+        bytes32 salt = keccak256(abi.encodePacked(sender, initializationCode));
 
         // predict
         return Clones.predictDeterministicAddress(cv.implementation, salt);
@@ -205,27 +198,29 @@ contract TLUniversalDeployer is Ownable {
 
     /// @notice Function to predict the address at which a contract would be deployed
     /// @dev Predicts for a specific implementation
+    /// @param sender The sender of the contract deployment transaction
     /// @param contractType The contract type to deploy
     /// @param initializationCode The initialization code to call after contract deployment
     /// @param versionIndex The indeex of the `ContractVersion` to deploy
-    function predictDeployedContractAddress(string calldata contractType, bytes calldata initializationCode, uint256 versionIndex) external view returns (address) {
+    function predictDeployedContractAddress(
+        address sender,
+        string calldata contractType,
+        bytes calldata initializationCode,
+        uint256 versionIndex
+    ) external view returns (address) {
         // get DeployableContract
         bytes32 dcId = keccak256(bytes(contractType));
         DeployableContract memory dc = _deployableContracts[dcId];
 
         // verify contract is valid
         if (!dc.created) revert InvalidDeployableContract();
-        if (dc.versions.length == 0) revert InvalidDeployableContract();
         if (versionIndex >= dc.versions.length) revert InvalidDeployableContract();
 
         // get latest version
         ContractVersion memory cv = dc.versions[versionIndex];
 
         // create salt by hashing the sender and init code
-        bytes32 salt = keccak256(abi.encodePacked(
-            msg.sender, 
-            initializationCode
-        ));
+        bytes32 salt = keccak256(abi.encodePacked(sender, initializationCode));
 
         // predict
         return Clones.predictDeterministicAddress(cv.implementation, salt);
@@ -236,21 +231,20 @@ contract TLUniversalDeployer is Ownable {
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Private function to deploy contracts
-    function _deploy(DeployableContract memory dc, ContractVersion memory cv, bytes memory initializationCode) private {
+    function _deploy(DeployableContract memory dc, ContractVersion memory cv, bytes memory initializationCode)
+        private
+    {
         // create salt by hashing the sender and init code
-        bytes32 salt = keccak256(abi.encodePacked(
-            msg.sender, 
-            initializationCode
-        ));
+        bytes32 salt = keccak256(abi.encodePacked(msg.sender, initializationCode));
 
         // clone
         address deployedContract = Clones.cloneDeterministic(cv.implementation, salt);
 
         // initialize
-        (bool success, ) = deployedContract.call(initializationCode);
+        (bool success,) = deployedContract.call(initializationCode);
         if (!success) revert InitializationFailed();
 
         // emit event
-        emit ContractDeployed(msg.sender, deployedContract, cv.implementation, dc.type_, cv.id);
+        emit ContractDeployed(msg.sender, deployedContract, cv.implementation, dc.cType, cv.id);
     }
 }
