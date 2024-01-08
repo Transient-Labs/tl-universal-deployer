@@ -1,66 +1,15 @@
-## Foundry
+# Transient Labs Universal Deployer
+A contract factory that can be used for multiple types of contracts to deploy ERC-1167 minimal proxy clones.
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+## Running Tests
+1. Install [foundry](getfoundry.sh)
+2. Run `make install` or `make update`
+3. Run `forge test` (optionally can adjust the fuzz runs via the flag `--fuzz-runs <number>`)
 
-Foundry consists of:
+## Disclaimer
+This codebase is provided on an "as is" and "as available" basis.
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+We do not give any warranties and will not be liable for any loss incurred through any use of this codebase.
 
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+## License
+This code is copyright Transient Labs, Inc 2023 and is licensed under the MIT license.
