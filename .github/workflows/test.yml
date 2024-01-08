@@ -1,16 +1,10 @@
-name: test
+on: [push]
 
-on: workflow_dispatch
-
-env:
-  FOUNDRY_PROFILE: ci
+name: Test
 
 jobs:
   check:
-    strategy:
-      fail-fast: true
-
-    name: Foundry project
+    name: Transient Labs Universal Deployer
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,16 +13,6 @@ jobs:
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
 
-      - name: Run Forge build
-        run: |
-          forge --version
-          forge build --sizes
-        id: build
-
-      - name: Run Forge tests
-        run: |
-          forge test -vvv
-        id: test
+      - name: Run unit tests
+        run: make quick_test
