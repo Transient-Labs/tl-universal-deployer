@@ -22,7 +22,7 @@ clean:
 build:
 	forge build --evm-version paris
 
-clean_build: clean bulid
+clean_build: clean build
 
 # Tests
 quick_test:
@@ -40,19 +40,30 @@ fuzz_test:
 # Deployments
 deploy_sepolia: build
 	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url sepolia --ledger --sender ${SENDER} --broadcast
-	sleep 5
-	$(eval deployed_contract=$(shell cat out.txt))
-	forge verify-contract $(deployed_contract) src/TLUniversalDeployer.sol:TLUniversalDeployer --chain sepolia --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	forge verify-contract $$(cat out.txt) src/TLUniversalDeployer.sol:TLUniversalDeployer --chain sepolia --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
 
-deploy_arb_sepolia: build
-	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url arb_sepolia --ledger --sender ${SENDER} --broadcast
-	sleep 5
-	$(eval deployed_contract=$(shell cat out.txt))
-	forge verify-contract $(deployed_contract) src/TLUniversalDeployer.sol:TLUniversalDeployer --chain arbitrum-sepolia --watch --constructor-args ${CONSTRUCTOR_ARGS}
+deploy_arbitrum_sepolia: build
+	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url arbitrum_sepolia --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/TLUniversalDeployer.sol:TLUniversalDeployer --chain arbitrum-sepolia --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
 
 deploy_base_sepolia: build
 	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url base_sepolia --ledger --sender ${SENDER} --broadcast
-	sleep 5
-	$(eval deployed_contract=$(shell cat out.txt))
-	forge verify-contract $(deployed_contract) src/TLUniversalDeployer.sol:TLUniversalDeployer --chain base-sepolia --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	forge verify-contract $$(cat out.txt) src/TLUniversalDeployer.sol:TLUniversalDeployer --chain base-sepolia --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
 
+deploy_mainnet: build
+	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url mainnet --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/TLUniversalDeployer.sol:TLUniversalDeployer --chain mainnet --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
+deploy_arbitrum_one: build
+	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url arbitrum --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/TLUniversalDeployer.sol:TLUniversalDeployer --chain arbitrum --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
+deploy_base: build
+	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url base --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/TLUniversalDeployer.sol:TLUniversalDeployer --chain base --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh

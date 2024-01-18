@@ -17,16 +17,16 @@ runs = 1024
 
 [rpc_endpoints]
 sepolia = "${SEPOLIA_RPC_URL}"
-arb_sepolia = "${ARB_SEPOLIA_RPC_URL}"
+arbitrum_sepolia = "${ARB_SEPOLIA_RPC_URL}"
 base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
 mainnet = "${ETH_RPC_URL}"
-arb = "${ARB_RPC_URL}"
+arbitrum = "${ARB_RPC_URL}"
 base = "${BASE_RPC_URL}"
 
 [etherscan]
 sepolia = { key = "${ETHERSCAN_KEY}" }
-arb_sepolia = { chain = "arbitrum-sepolia", key = "${ARBISCAN_KEY}", url = "https://api-sepolia.arbiscan.io/api" }
+arbitrum_sepolia = { chain = "arbitrum-sepolia", key = "${ARBISCAN_KEY}", url = "https://api-sepolia.arbiscan.io/api" }
 base_sepolia = { chain = "base-sepolia", key = "${BASESCAN_KEY}", url = "https://api-sepolia.basescan.org/api" }
 mainnet = { key = "${ETHERSCAN_KEY}"}
-arb = { key = "${ARBISCAN_KEY}", url = "https://api.arbiscan.io/api" }
+arbitrum = { key = "${ARBISCAN_KEY}", url = "https://api.arbiscan.io/api" }
 base = { key = "${BASESCAN_KEY}", url = "https://api.basescan.org/api" }

@@ -3,7 +3,6 @@ pragma solidity 0.8.22;
 
 import "forge-std/Script.sol";
 import {Strings} from "openzeppelin/utils/Strings.sol";
-import {TLUniversalDeployer} from "src/TLUniversalDeployer.sol";
 
 interface ICreate2Deployer {
     function deploy(uint256 value, bytes32 salt, bytes memory code) external;
@@ -12,7 +11,6 @@ interface ICreate2Deployer {
 
 contract Deploy is Script {
     using Strings for address;
-    using Strings for bytes;
 
     function run() public {
         // get environment variables
