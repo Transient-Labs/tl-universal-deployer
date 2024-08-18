@@ -53,6 +53,11 @@ deploy_base_sepolia: build
 	forge verify-contract $$(cat out.txt) src/TLUniversalDeployer.sol:TLUniversalDeployer --chain base-sepolia --watch --constructor-args ${CONSTRUCTOR_ARGS}
 	@bash print_and_clean.sh
 
+deploy_shape_sepolia: build
+	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url shape_sepolia --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/TLUniversalDeployer.sol:TLUniversalDeployer --verifier blockscout --verifier-url https://explorer-sepolia.shape.network/api --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
 deploy_mainnet: build
 	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url mainnet --ledger --sender ${SENDER} --broadcast
 	forge verify-contract $$(cat out.txt) src/TLUniversalDeployer.sol:TLUniversalDeployer --chain mainnet --watch --constructor-args ${CONSTRUCTOR_ARGS}
