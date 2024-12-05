@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.22;
 
-import "forge-std/Test.sol";
-import {Strings} from "openzeppelin/utils/Strings.sol";
+import "forge-std-1.9.4/Test.sol";
+import {Strings} from "@openzeppelin-contracts-5.0.2/utils/Strings.sol";
 import {Clones, Ownable, TLUniversalDeployer} from "src/TLUniversalDeployer.sol";
 import {ERC721} from "test/utils/ERC721.sol";
 import {ERC1155} from "test/utils/ERC1155.sol";

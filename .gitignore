@@ -12,3 +12,6 @@ docs/
 .env
 
 out.txt
+
+# Soldeer
+/dependencies

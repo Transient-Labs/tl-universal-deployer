@@ -4,13 +4,11 @@
 
 # Remove modules
 remove:
-	rm -rf .gitmodules && rm -rf .git/modules/* && rm -rf lib && touch .gitmodules && git add . && git commit -m "modules"
+	rm -rf lib
 
 # Install the Modules
 install:
-	forge install foundry-rs/forge-std --no-commit
-	forge install OpenZeppelin/openzeppelin-contracts@v5.0.1 --no-commit
-	forge install OpenZeppelin/openzeppelin-contracts-upgradeable@v5.0.1 --no-commit
+	forge soldeer install
 
 # Update the modules
 update: remove install
@@ -71,4 +69,9 @@ deploy_arbitrum_one: build
 deploy_base: build
 	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url base --ledger --sender ${SENDER} --broadcast
 	forge verify-contract $$(cat out.txt) src/TLUniversalDeployer.sol:TLUniversalDeployer --chain base --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
+deploy_shape: build
+	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url shape --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/TLUniversalDeployer.sol:TLUniversalDeployer --verifier blockscout --verifier-url https://internal-shaper-explorer.alchemypreview.com/api --watch --constructor-args ${CONSTRUCTOR_ARGS}
 	@bash print_and_clean.sh

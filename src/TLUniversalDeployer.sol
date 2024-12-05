@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.22;
 
-import {Ownable} from "openzeppelin/access/Ownable.sol";
-import {Clones} from "openzeppelin/proxy/Clones.sol";
+import {Ownable} from "@openzeppelin-contracts-5.0.2/access/Ownable.sol";
+import {Clones} from "@openzeppelin-contracts-5.0.2/proxy/Clones.sol";
 
 /// @title TLUniversalDeployer.sol
 /// @notice Transient Labs universal deployer - a contract factory allowing for easy deployment of TL contracts
