@@ -5,5 +5,12 @@
             "constructor_args": "0x00000000000000000000000077b35947d508012589a91ca4c9d168824376cc7d",
             "deployed_contract": "0x7c24805454F7972d36BEE9D139BD93423AA29f3f"
         }
+    },
+    "CloneDeployer": {
+        "1.1.0": {
+            "salt": "0x0101000000000000000000000000000000000000000000000000000000000000",
+            "constructor_args": "0x00000000000000000000000077b35947d508012589a91ca4c9d168824376cc7d",
+            "deployed_contract": "0x3b3b425b96286c86dcb7bb8585dbf4642c7fea2e"
+        }
     }
 }

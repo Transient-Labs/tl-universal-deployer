@@ -35,7 +35,7 @@ gas_test:
 fuzz_test:
 	forge test --fuzz-runs 10000
 
-# Deployments
+# TLUniversalDeployer
 deploy_sepolia: build
 	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url sepolia --ledger --sender ${SENDER} --broadcast
 	forge verify-contract $$(cat out.txt) src/TLUniversalDeployer.sol:TLUniversalDeployer --chain sepolia --watch --constructor-args ${CONSTRUCTOR_ARGS}
@@ -74,4 +74,45 @@ deploy_base: build
 deploy_shape: build
 	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url shape --ledger --sender ${SENDER} --broadcast
 	forge verify-contract $$(cat out.txt) src/TLUniversalDeployer.sol:TLUniversalDeployer --verifier blockscout --verifier-url https://internal-shaper-explorer.alchemypreview.com/api --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
+# CloneDeployer
+deploy_CloneDeployer_sepolia: build
+# 	forge script script/Deploy.s.sol:DeployCloneDeployer --evm-version paris --rpc-url sepolia --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/CloneDeployer.sol:CloneDeployer --chain sepolia --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
+deploy_CloneDeployer_arbitrum_sepolia: build
+	forge script script/Deploy.s.sol:DeployCloneDeployer --evm-version paris --rpc-url arbitrum_sepolia --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/CloneDeployer.sol:CloneDeployer --chain arbitrum-sepolia --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
+deploy_CloneDeployer_base_sepolia: build
+	forge script script/Deploy.s.sol:DeployCloneDeployer --evm-version paris --rpc-url base_sepolia --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/CloneDeployer.sol:CloneDeployer --chain base-sepolia --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
+deploy_CloneDeployer_shape_sepolia: build
+	forge script script/Deploy.s.sol:DeployCloneDeployer --evm-version paris --rpc-url shape_sepolia --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/CloneDeployer.sol:CloneDeployer --verifier blockscout --verifier-url https://explorer-sepolia.shape.network/api --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
+deploy_CloneDeployer_mainnet: build
+	forge script script/Deploy.s.sol:DeployCloneDeployer --evm-version paris --rpc-url mainnet --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/CloneDeployer.sol:CloneDeployer --chain mainnet --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
+deploy_CloneDeployer_arbitrum_one: build
+	forge script script/Deploy.s.sol:DeployCloneDeployer --evm-version paris --rpc-url arbitrum --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/CloneDeployer.sol:CloneDeployer --chain arbitrum --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
+deploy_CloneDeployer_base: build
+	forge script script/Deploy.s.sol:DeployCloneDeployer --evm-version paris --rpc-url base --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/CloneDeployer.sol:CloneDeployer --chain base --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
+deploy_CloneDeployer_shape: build
+	forge script script/Deploy.s.sol:DeployCloneDeployer --evm-version paris --rpc-url shape --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/CloneDeployer.sol:CloneDeployer --verifier blockscout --verifier-url https://internal-shaper-explorer.alchemypreview.com/api --watch --constructor-args ${CONSTRUCTOR_ARGS}
 	@bash print_and_clean.sh
